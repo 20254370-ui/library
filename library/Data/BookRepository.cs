@@ -29,6 +29,7 @@ public class BookRepository
 
     // READ: every book, sorted by title.
     public async Task<List<Book>> GetAllAsync()
+
     {
         const string sql = "SELECT book_id, title, category, price FROM lending.book ORDER BY title;";
         var books = new List<Book>();
@@ -39,5 +40,16 @@ public class BookRepository
             books.Add(ReadBook(reader));
         }
         return books;
+    }
+    // CREATE: insert a new book. The database chooses its book_id.
+    public async Task AddAsync(Book book)
+    {
+        const string sql = "INSERT INTO lending.book (title, category, price) " +
+                           "VALUES (@title, @category, @price);";
+        await using var command = _dataSource.CreateCommand(sql);
+        command.Parameters.AddWithValue("title", book.Title);
+        command.Parameters.AddWithValue("category", (object?)book.Category ?? DBNull.Value);
+        command.Parameters.AddWithValue("price", (object?)book.Price ?? DBNull.Value);
+        await command.ExecuteNonQueryAsync();
     }
 }

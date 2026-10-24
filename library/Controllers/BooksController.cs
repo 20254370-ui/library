@@ -20,4 +20,22 @@ public class BooksController : Controller
         var books = await _books.GetAllAsync();
         return View(books);
     }
+        // GET /Books/Create : an empty form.
+    public IActionResult Create()
+    {
+        return View(new Book());
+    }
+
+    // POST /Books/Create : the form was submitted.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Book book)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(book);
+        }
+        await _books.AddAsync(book);
+        return RedirectToAction(nameof(Index));
+    }
 }
