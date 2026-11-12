@@ -8,10 +8,12 @@ namespace library.Controllers;
 public class MembersController : Controller
 {
     private readonly MemberRepository _members;
+    private readonly LoanRepository _loans;
 
-    public MembersController(MemberRepository members)
+    public MembersController(MemberRepository members, LoanRepository loans)
     {
         _members = members;
+        _loans = loans;
     }
 
     public async Task<IActionResult> Index()
@@ -108,5 +110,21 @@ public class MembersController : Controller
             return View("Delete", member);
         }
         return RedirectToAction(nameof(Index));
+    }
+    public async Task<IActionResult> Details(long id)
+    {
+        var member = await _members.GetByIdAsync(id);
+        if (member == null)
+        {
+            return NotFound();
+        }
+
+        var details = new MemberDetails
+        {
+            Member = member,
+            Loans = await _loans.GetByMemberAsync(id)
+        };
+
+        return View(details);
     }
 }
