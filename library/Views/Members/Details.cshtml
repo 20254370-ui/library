@@ -3,37 +3,43 @@
     ViewData["Title"] = Model.Member.FullName;
 }
 
-<h1 class="mb-1">@Model.Member.FullName</h1>
-<p class="text-muted">@Model.Member.MemberType · @(Model.Member.Email ?? "no email")</p>
+<p class="eyebrow">Member</p>
+<h1 class="display-5 mb-1">@Model.Member.FullName</h1>
+<p class="mb-4">
+    <span class="badge text-bg-warning">@Model.Member.MemberType</span>
+    <span class="text-muted ms-2">@(Model.Member.Email ?? "no email")</span>
+</p>
 
-<h2 class="h5 mt-4">Loans</h2>
-@if (Model.Loans.Count == 0)
-{
-    <p>This member has never borrowed a book.</p>
-}
-else
-{
-    <table class="table table-striped align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Book</th>
-                <th>Loaned</th>
-                <th>Returned</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var loan in Model.Loans)
-            {
+<div class="card p-3">
+    <h2 class="h4 mb-3">Loans</h2>
+    @if (Model.Loans.Count == 0)
+    {
+        <p class="mb-0">This member has never borrowed a book.</p>
+    }
+    else
+    {
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
                 <tr>
-                    <td>@loan.BookTitle</td>
-                    <td>@(loan.LoanedOn.ToString("yyyy-MM-dd"))</td>
-                    <td>@(loan.ReturnedOn?.ToString("yyyy-MM-dd") ?? "—")</td>
-                    <td>@loan.Status</td>
+                    <th>Book</th>
+                    <th>Loaned</th>
+                    <th>Returned</th>
+                    <th>Status</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var loan in Model.Loans)
+                {
+                    <tr class="@(loan.Status == "Overdue" ? "row-overdue" : "")">
+                        <td>@loan.BookTitle</td>
+                        <td>@(loan.LoanedOn.ToString("yyyy-MM-dd"))</td>
+                        <td>@(loan.ReturnedOn?.ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td><span class="badge @(loan.Status == "Overdue" ? "text-bg-danger" : loan.Status == "Out" ? "text-bg-warning" : "text-bg-secondary")">@loan.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
-<a asp-action="Index" class="btn btn-link px-0">Back to members</a>
+<a asp-action="Index" class="btn btn-link px-0 text-decoration-none">← Back to members</a>
